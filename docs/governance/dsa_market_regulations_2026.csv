@@ -1,0 +1,3 @@
+region_id,geo_jurisdiction,dsa_audit_tier,max_allowed_ivt_pct,emergency_escalation_email
+GLOBAL_CORE,European Union (Eurozone),"Tier-1 VLOP (6% Revenue Fine Scope)",0.035,emea-integrity-escalations@tiktok.com
+USDS_JV,United States Domestic,Custom Federal Cloud Ringfence,0.050,usds-trust-safety@tiktok.com

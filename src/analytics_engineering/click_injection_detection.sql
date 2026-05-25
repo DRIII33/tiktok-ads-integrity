@@ -1,74 +1,73 @@
 /*
 ========================================================================================
-PROJECT: DATA LAKE LOGIC PIPELINE FOR NETWORK MONETIZATION FRAUD
-OBJECTIVE: ISOLATE ADRESSED PANGLE BOTNETS RUNNING REAL NLP METRIC SCENARIOS
-DIALECT: GOOGLE BIGQUERY SQL
+PROJECT: TRANSFORMATION AND SECURITY LOGIC LAYER (BIGQUERY CORE)
+OBJECTIVE: AGGREGATE POLICY METRICS AND BUILD VW_FEDERATED_DSA_REPORTING
+DIALECT: GOOGLE BIGQUERY SQL STANDARD
 ========================================================================================
 */
 
-WITH TrafficAggregation AS (
-  SELECT
-    advertiser_id,
-    network_type,
-    region_id,
-    COUNT(ad_id) AS total_ad_install_events,
-    
-    -- Track invalid traffic markers via sub-second installation times (Click Injections)
-    COUNTIF(ttr_seconds < 1.0) AS automated_injection_clicks,
-    
-    -- Evaluate cumulative linguistic threat exposure across profiles
-    SUM(nlp_token_urgent + nlp_token_guaranteed + nlp_token_click) AS cumulative_nlp_scam_weight,
-    
-    -- Monitor unlabeled AI generation activity in suspect channels
-    COUNTIF(is_ai_generated_creative = 1 AND is_scam = 1) AS flagged_ai_scam_ads,
-    AVG(spend_usd) AS average_spend_pool,
-    MIN(historical_trust_score) AS minimum_observed_trust
-  FROM
-    `driiiportfolio.ads_integrity_srv.raw_attribution_logs`
-  GROUP BY
-    1, 2, 3
-),
-
-RiskAttributionAnalytics AS (
-  SELECT
-    advertiser_id,
-    network_type,
-    region_id,
-    total_ad_install_events,
-    automated_injection_clicks,
-    cumulative_nlp_scam_weight,
-    flagged_ai_scam_ads,
-    average_spend_pool,
-    minimum_observed_trust,
-    
-    -- Calculate operational ratio indicators safely to protect against zero division errors
-    SAFE_DIVIDE(automated_injection_clicks, total_ad_install_events) AS attribution_fraud_ratio,
-    SAFE_DIVIDE(cumulative_nlp_scam_weight, total_ad_install_events) AS localized_nlp_risk_density
-  FROM
-    TrafficAggregation
-)
-
+CREATE OR REPLACE VIEW `driiiportfolio.ads_integrity_srv.vw_federated_dsa_reporting` AS
 SELECT
+  ad_id,
   advertiser_id,
   network_type,
   region_id,
-  total_ad_install_events,
-  automated_injection_clicks,
-  ROUND(attribution_fraud_ratio * 100, 2) AS fraud_percentage,
-  ROUND(localized_nlp_risk_density, 4) AS nlp_risk_density_score,
-  ROUND(average_spend_pool, 2) AS average_spend_pool,
+  postal_code,
+  spend_usd,
+  click_count,
+  ttr_seconds,
+  is_ai_generated_creative,
+  historical_trust_score,
+  is_scam,
   
-  -- Structural threat ranking matches May 2026 verified platform specifications
+  -- Calculate structural text mining score based on continuous weights
+  (nlp_token_2hours + nlp_token_click + nlp_token_fast + nlp_token_guaranteed + nlp_token_urgent) AS total_nlp_scam_weight,
+  
+  -- Algorithmic threat vector separation logic
   CASE
-    WHEN network_type = 'Pangle_Network' AND attribution_fraud_ratio >= 0.242 THEN 'CRITICAL: CO-ORDINATED PANGLE BOTNET'
-    WHEN attribution_fraud_ratio > 0.15 AND localized_nlp_risk_density > 0.05 THEN 'HIGH RISK: AUTOMATED NLP FRAUD ENGINE'
-    WHEN attribution_fraud_ratio > 0.10 THEN 'MEDIUM RISK: ATTRIBUTION CLAMP ESCAPE'
-    ELSE 'COMPLIANT: VERIFIED TRUSTED CHANNEL'
-  END AS ecosystem_risk_classification
+    WHEN ttr_seconds < 1.0 AND network_type = 'Pangle_Network' THEN 'Pangle Click Injection Botnet'
+    WHEN ttr_seconds < 1.0 THEN 'Standard Attribution Fraud Injection'
+    WHEN is_scam = 1 AND is_ai_generated_creative = 1 THEN 'Deceptive Generative Media Campaign'
+    WHEN is_scam = 1 THEN 'Policy Evasion Scam Matrix Asset'
+    ELSE 'Approved Secure Asset Layer'
+  END AS threat_type_classification,
+  
+  -- Quantify the immediate financial exposure 
+  CASE 
+    WHEN ttr_seconds < 1.0 OR is_scam = 1 THEN spend_usd
+    ELSE 0.0
+  END AS budget_at_risk_usd,
+  
+  -- Enforce geopolitical regulatory mapping boundaries
+  CASE
+    WHEN region_id = 'USDS_JV' THEN 'United States Domestic'
+    ELSE 'European Union (Eurozone)'
+  END AS geo_jurisdiction,
+  
+  -- Dynamically assign DSA enforcement priorities
+  CASE
+    WHEN region_id = 'GLOBAL_CORE' AND (is_scam = 1 OR ttr_seconds < 1.0) THEN 'Tier-1 VLOP (6% Revenue Fine Scope)'
+    WHEN region_id = 'GLOBAL_CORE' THEN 'Tier-2 Baseline Regional Compliance'
+    ELSE 'Custom Federal Cloud Ringfence'
+  END AS dsa_audit_tier,
+  
+  -- Define localized platform safety alert flags
+  CASE 
+    WHEN region_id = 'GLOBAL_CORE' THEN '0.0350'
+    ELSE '0.0500'
+  END AS max_allowed_ivt_pct,
+  
+  -- Provision cross-functional escalation communication points
+  CASE
+    WHEN region_id = 'USDS_JV' THEN 'usds-trust-safety@tiktok.com'
+    ELSE 'emea-integrity-escalations@tiktok.com'
+  END AS emergency_escalation_email,
+  
+  -- Compute binary alert flags for Looker Studio KPI logic triggers
+  CASE
+    WHEN region_id = 'GLOBAL_CORE' AND ttr_seconds < 1.0 THEN 1
+    ELSE 0
+  END AS is_regulatory_breach_alert
+
 FROM
-  RiskAttributionAnalytics
-WHERE
-  total_ad_install_events >= 5
-ORDER BY
-  fraud_percentage DESC,
-  nlp_risk_density_score DESC;
+  `driiiportfolio.ads_integrity_srv.raw_attribution_logs`;

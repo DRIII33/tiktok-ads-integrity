@@ -2,7 +2,7 @@
 
 **Target Role:** TikTok - Risk Analyst (Global Operations / Ads Integrity) 
 
-**Location Focus:** Austin, TX / Waco, TX  
+**Location Focus:** Texas  
 
 **Temporal Validity & Data Baseline:** Current as of May 2026  
 

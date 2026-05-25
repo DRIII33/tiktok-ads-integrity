@@ -1,0 +1,64 @@
+{
+  "calculated_fields": [
+    {
+      "name": "Ecosystem Scam Rate",
+      "formula": "SUM(is_scam) / COUNT(ad_id)",
+      "format": "PERCENT"
+    },
+    {
+      "name": "Total Ad Capital Exposure",
+      "formula": "SUM(budget_at_risk_usd)",
+      "format": "CURRENCY_USD"
+    },
+    {
+      "name": "Linguistic Threat Density",
+      "formula": "AVG(total_nlp_scam_weight)",
+      "format": "NUMBER"
+    }
+  ],
+  "dashboard_layout": {
+    "title": "TIKTOK GLOBAL ADS INTEGRITY CONTROL PANEL — EXTENDED REVISED MONITORING FRAME",
+    "global_filters": [
+      "region_id",
+      "network_type",
+      "threat_type_classification"
+    ],
+    "kpi_scorecards": [
+      {
+        "title": "BUDGET AT RISK (USD)",
+        "metric": "Total Ad Capital Exposure"
+      },
+      {
+        "title": "ECOSYSTEM SCAM RATE",
+        "metric": "Ecosystem Scam Rate"
+      },
+      {
+        "title": "LINGUISTIC THREAT DENSITY",
+        "metric": "Linguistic Threat Density"
+      }
+    ],
+    "visualizations": [
+      {
+        "type": "bubble_map",
+        "description": "GEO-MAPPING CORRIDOR PROTECTION AREA",
+        "dimension": "postal_code",
+        "size_metric": "budget_at_risk_usd"
+      },
+      {
+        "type": "horizontal_bar_chart",
+        "description": "NETWORK FRAUD METRIC ATTRIBUTIONS",
+        "dimension": "network_type",
+        "metric": "fraud_percentage" 
+      }
+    ],
+    "detailed_table": {
+      "title": "REGULATORY COMPLIANCE AND THREAT ACCOUNT LEDGER DETAILED MATRIX",
+      "dimensions": [
+        "advertiser_id",
+        "geo_jurisdiction",
+        "threat_type_classification",
+        "budget_at_risk_usd"
+      ]
+    }
+  }
+}

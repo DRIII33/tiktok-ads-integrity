@@ -1,6 +1,8 @@
 # Enterprise Ads Integrity & Regulatory Compliance Briefing
 
-**Portfolio Project Prepared by Daniel Rodriguez III** **Date:** May 2026  
+**Portfolio Project Prepared by Daniel Rodriguez III**
+
+**Date:** May 2026  
 
 ---
 
